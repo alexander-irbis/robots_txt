@@ -1,7 +1,10 @@
 
-![](https://img.shields.io/crates/l/robots_txt.svg) [![](https://img.shields.io/crates/v/robots_txt.svg)](https://crates.io/crates/robots_txt)
+![](https://img.shields.io/crates/l/robots_txt.svg)
+[![crates.io](https://img.shields.io/crates/v/robots_txt.svg)](https://crates.io/crates/robots_txt)
+[![Build Status](https://travis-ci.org/alexander-irbis/robots_txt.svg)](https://travis-ci.org/alexander-irbis/robots_txt)
 
-> robots_txt is a lightweight robots.txt parser and generator written in Rust.
+
+**robots_txt is a lightweight robots.txt parser and generator written in Rust.**
 
 Nothing extra.
  
@@ -39,6 +42,7 @@ fn main() {
     println!("{}", robots);
 }
 ```
+
 
 ## Alternatives
 
