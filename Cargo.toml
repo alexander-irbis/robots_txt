@@ -1,0 +1,20 @@
+[package]
+name = "robots_txt"
+version = "0.0.0"
+authors = ["Alexander Irbis <irbis.labs@gmail.com>"]
+license = "MIT/Apache-2.0"
+description = "Lightweight robots.txt parser and generator"
+keywords = ["robot", "robots", "robots.txt"]
+readme = "README.md"
+homepage = "https://github.com/alexander-irbis/robots_txt"
+repository = "https://github.com/alexander-irbis/robots_txt"
+documentation = "https://docs.rs/robots_txt/"
+exclude = [
+    ".gitignore",
+    ".travis.yml",
+    "appveyor.yml",
+]
+#build = "build.rs"
+publish = true
+
+[dependencies]
