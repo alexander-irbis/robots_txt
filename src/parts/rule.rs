@@ -3,16 +3,16 @@ use prelude::*;
 
 #[derive(Clone, Debug, Default, Eq, PartialEq)]
 pub struct Rule<'a> {
-    pub allowance: bool,
+    pub allow: bool,
     pub path: Cow<'a, str>,
 }
 
 impl<'a> Rule<'a> {
-    pub fn new<P>(allowanse: bool, path: P) -> Self
+    pub fn new<P>(allow: bool, path: P) -> Self
         where P: Into<Cow<'a, str>>
     {
         Rule {
-            allowance: allowanse,
+            allow: allow,
             path: path.into(),
         }
     }
@@ -32,10 +32,14 @@ impl<'a> Rule<'a> {
 
 impl <'a> Render for Rule<'a> {
     fn render_to<W: fmt::Write>(&self, w: &mut W) -> fmt::Result {
-        match self.allowance {
-            true => writeln!(w, "Allow: {}", self.path),
-            false => writeln!(w, "Disallow: {}", self.path),
-        }
+        match self.allow {
+            true => write!(w, "Allow:")?,
+            false => write!(w, "Disallow:")?,
+        };
+        if !self.path.is_empty() {
+            write!(w, " {}", self.path)?;
+        };
+        writeln!(w)
     }
 }
 

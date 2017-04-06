@@ -3,11 +3,12 @@ use prelude::*;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct Section<'a> {
-    pub crawl_delay: Option<Duration>,
+    pub crawl_delay: Option<usize>,
     pub req_rate: Option<RequestRate>,
     pub rules: Vec<Rule<'a>>,
     pub sitemaps: Vec<Url>,
     pub useragents: Vec<Cow<'a, str>>,
+    pub host: Option<Cow<'a, str>>,
 }
 
 impl <'a> Default for Section<'a> {
@@ -18,6 +19,7 @@ impl <'a> Default for Section<'a> {
             rules: vec![ Rule::disallow("") ],
             sitemaps: Vec::new(),
             useragents: vec![ Cow::from("*") ],
+            host: None,
         }
     }
 }
@@ -31,7 +33,7 @@ impl <'a> Render for Section<'a> {
             rule.render_to(w)?;
         }
         if let Some(delay) = self.crawl_delay.as_ref() {
-            writeln!(w, "Crawl-delay: {}", delay.as_secs())?;
+            writeln!(w, "Crawl-delay: {}", delay)?;
         }
         if let Some(rate) = self.req_rate.as_ref() {
             rate.render_to(w)?;
@@ -39,7 +41,72 @@ impl <'a> Render for Section<'a> {
         for url in &self.sitemaps {
             writeln!(w, "Sitemap: {}", url)?;
         }
+        if let Some(host) = self.host.as_ref() {
+            writeln!(w, "Host: {}", host)?;
+        }
         writeln!(w)
+    }
+}
+
+impl <'a> Section<'a> {
+    pub fn empty() -> Self {
+        Section {
+            crawl_delay: None,
+            req_rate: None,
+            rules: Vec::new(),
+            sitemaps: Vec::new(),
+            useragents: Vec::new(),
+            host: None,
+        }
+    }
+
+    pub fn is_empty(&self) -> bool {
+        self.crawl_delay.is_none()
+            && self.req_rate.is_none()
+            && self.host.is_none()
+            && self.rules.is_empty()
+            && self.sitemaps.is_empty()
+            && self.useragents.is_empty()
+    }
+
+    pub fn has_rules(&self) -> bool {
+        !self.rules.is_empty()
+            || self.crawl_delay.is_some()
+            || self.req_rate.is_some()
+            || self.host.is_some()
+            || !self.sitemaps.is_empty()
+    }
+
+    pub fn is_default(&self) -> bool {
+        self.useragents.iter().any(|v| v == "*")
+    }
+
+    pub fn merge(&mut self, mut other: Section<'a>) {
+        if !self.is_default() {
+            // FIXME if !other.is_default()
+            self.useragents.append(&mut other.useragents);
+        }
+        self.sitemaps.append(&mut other.sitemaps);
+        self.rules.append(&mut other.rules);
+        if other.crawl_delay.is_some() {
+            self.crawl_delay = other.crawl_delay;
+        }
+        if other.req_rate.is_some() {
+            self.req_rate = other.req_rate;
+        }
+    }
+
+    pub fn push_ua<U>(&mut self, ua: U) where U: Into<Cow<'a, str>> {
+        self.useragents.push(ua.into())
+    }
+
+    pub fn push_rule(&mut self, rule: Rule<'a>) {
+        self.rules.push(rule)
+    }
+
+    pub fn push_sitemap(&mut self, url: &str) -> Result<(), UrlParseError> {
+        Url::parse(url)
+            .map(|url| self.sitemaps.push(url) )
     }
 }
 
@@ -50,6 +117,26 @@ mod tests {
 
     #[test]
     fn render() {
-        assert_eq!("User-agent: *\nDisallow: \n\n", Section::default().render().unwrap());
+        assert_eq!("User-agent: *\nDisallow:\n\n", Section::default().render().unwrap());
+    }
+
+    #[test]
+    fn conditions() {
+        let mut section = Section::empty();
+        assert!(section.is_empty());
+        assert!(!section.is_default());
+
+        section.push_ua("bot");
+        assert!(!section.is_empty());
+        assert!(!section.is_default());
+
+        let mut section = Section::empty();
+        section.push_ua("*");
+        assert!(!section.is_empty());
+        assert!(section.is_default());
+
+        let section = Section::default();
+        assert!(!section.is_empty());
+        assert!(section.is_default());
     }
 }

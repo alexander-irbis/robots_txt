@@ -1,6 +1,6 @@
 [package]
 name = "robots_txt"
-version = "0.1.0"
+version = "0.2.0"
 authors = ["Alexander Irbis <irbis.labs@gmail.com>"]
 license = "MIT/Apache-2.0"
 description = "Lightweight robots.txt parser and generator"
@@ -22,3 +22,7 @@ publish = true
 [dependencies]
 url         = "^1.0"
 
+[features]
+default     = ["release"]
+dev         = []
+release     = []
