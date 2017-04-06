@@ -1,3 +1,6 @@
+use std::collections::BTreeSet;
+use std::iter::FromIterator;
+
 use prelude::*;
 
 
@@ -6,8 +9,8 @@ pub struct Section<'a> {
     pub crawl_delay: Option<usize>,
     pub req_rate: Option<RequestRate>,
     pub rules: Vec<Rule<'a>>,
-    pub sitemaps: Vec<Url>,
-    pub useragents: Vec<Cow<'a, str>>,
+    pub sitemaps: BTreeSet<Url>,
+    pub useragents: BTreeSet<Cow<'a, str>>,
     pub host: Option<Cow<'a, str>>,
 }
 
@@ -17,8 +20,8 @@ impl <'a> Default for Section<'a> {
             crawl_delay: None,
             req_rate: None,
             rules: vec![ Rule::disallow("") ],
-            sitemaps: Vec::new(),
-            useragents: vec![ Cow::from("*") ],
+            sitemaps: BTreeSet::new(),
+            useragents: BTreeSet::from_iter(Some(Cow::from("*")).into_iter()),
             host: None,
         }
     }
@@ -54,8 +57,8 @@ impl <'a> Section<'a> {
             crawl_delay: None,
             req_rate: None,
             rules: Vec::new(),
-            sitemaps: Vec::new(),
-            useragents: Vec::new(),
+            sitemaps: BTreeSet::new(),
+            useragents: BTreeSet::new(),
             host: None,
         }
     }
@@ -78,13 +81,16 @@ impl <'a> Section<'a> {
     }
 
     pub fn is_default(&self) -> bool {
-        self.useragents.iter().any(|v| v == "*")
+        self.useragents.contains("*")
     }
 
     pub fn merge(&mut self, mut other: Section<'a>) {
         if !self.is_default() {
-            // FIXME if !other.is_default()
-            self.useragents.append(&mut other.useragents);
+            if other.is_default() {
+                self.useragents = other.useragents;
+            } else {
+                self.useragents.append(&mut other.useragents);
+            }
         }
         self.sitemaps.append(&mut other.sitemaps);
         self.rules.append(&mut other.rules);
@@ -97,7 +103,14 @@ impl <'a> Section<'a> {
     }
 
     pub fn push_ua<U>(&mut self, ua: U) where U: Into<Cow<'a, str>> {
-        self.useragents.push(ua.into())
+        if self.is_default() {
+            return;
+        }
+        let ua = ua.into();
+        if ua == "*" {
+            self.useragents.clear();
+        }
+        self.useragents.insert(ua);
     }
 
     pub fn push_rule(&mut self, rule: Rule<'a>) {
@@ -106,7 +119,7 @@ impl <'a> Section<'a> {
 
     pub fn push_sitemap(&mut self, url: &str) -> Result<(), UrlParseError> {
         Url::parse(url)
-            .map(|url| self.sitemaps.push(url) )
+            .map(|url| { self.sitemaps.insert(url); } )
     }
 }
 
