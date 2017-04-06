@@ -9,7 +9,10 @@ pub struct RequestRate {
 
 impl RequestRate {
     pub fn new(requests: usize, seconds: usize) -> Self {
-        RequestRate { requests, seconds }
+        RequestRate {
+            requests: requests,
+            seconds: seconds
+        }
     }
 
     pub fn into_duration(self) -> Duration {
