@@ -23,23 +23,36 @@ Robots_txt is [available on crates.io](https://crates.io/crates/robots_txt) and 
 Cargo.toml:
 ```toml
 [dependencies]
-robots_txt = "*"
+robots_txt = "0.3"
 ```
 
 main.rs:
 ```rust
-#[macro_use]
 extern crate robots_txt;
 
 use robots_txt::Robots;
 
 static ROBOTS: &'static str = r#"
-    # TODO simple example
+# robots.txt for http://www.site.com
+User-Agent: *
+Disallow: /cyberworld/map/ # this is an infinite virtual URL space
+# Cybermapper knows where to go
+User-Agent: cybermapper
+Disallow:
 "#;
 
 fn main() {
-    let robots = Robots::parse(ROBOTS).unwrap();
-    println!("{}", robots);
+    let robots = Robots::from_str(ROBOTS);
+
+    let matcher = SimpleMatcher::new(&robots.choose_section("AnyBot").rules);
+    assert!(matcher.check_path("/some/page"));
+    assert!(matcher.check_path("/cyberworld/welcome.html"));
+    assert!(!matcher.check_path("/cyberworld/map/object.html"));
+
+    let matcher = SimpleMatcher::new(&robots.choose_section("Mozilla/5.0; CyberMapper v. 3.14").rules);
+    assert!(matcher.check_path("/some/page"));
+    assert!(matcher.check_path("/cyberworld/welcome.html"));
+    assert!(matcher.check_path("/cyberworld/map/object.html"));
 }
 ```
 

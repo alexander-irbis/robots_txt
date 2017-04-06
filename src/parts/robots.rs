@@ -72,6 +72,27 @@ impl <'a> Robots<'a> {
 
         robots.finalize()
     }
+
+    pub fn choose_section<U>(&self, ua: U) -> &Section<'a> where U: AsRef<str> {
+        let ua: &str = ua.as_ref();
+        if !ua.is_empty() {
+            for section in &self.sections {
+                for ua2 in &section.useragents {
+                    if ua2.len() > ua.len() {
+                        continue;
+                    }
+                    let matches = (0 .. ua.len() - ua2.len() + 1)
+                        .map(|i| &ua[i .. i + ua2.len()])
+                        .any(|s: &str| s.eq_ignore_ascii_case(ua2));
+
+                    if matches {
+                        return section
+                    }
+                }
+            }
+        }
+        &self.default_section
+    }
 }
 
 
