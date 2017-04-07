@@ -19,7 +19,17 @@ impl <'a> Render for Robots<'a> {
     }
 }
 
+impl <'a> fmt::Display for Robots<'a> {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        self.render_to(f)
+    }
+}
+
 impl <'a> Robots<'a> {
+    pub fn start_build() -> RobotsBuilder<'a> {
+        RobotsBuilder::build()
+    }
+
     pub fn from_str(input: &'a str) -> Robots<'a> {
 
         let mut robots = Constructor::default();

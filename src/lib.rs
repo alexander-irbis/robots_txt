@@ -24,6 +24,9 @@ pub extern crate url;
 
 pub mod prelude;
 
+pub mod builder;
+pub use builder::*;
+
 pub mod matcher;
 pub use matcher::*;
 

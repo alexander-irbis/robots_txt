@@ -4,6 +4,8 @@
 [![Build Status](https://travis-ci.org/alexander-irbis/robots_txt.svg)](https://travis-ci.org/alexander-irbis/robots_txt)
 
 
+# robots_txt
+
 **robots_txt is a lightweight robots.txt parser and generator written in Rust.**
 
 Nothing extra.
@@ -23,8 +25,10 @@ Robots_txt is [available on crates.io](https://crates.io/crates/robots_txt) and 
 Cargo.toml:
 ```toml
 [dependencies]
-robots_txt = "0.3"
+robots_txt = "0.4"
 ```
+
+### Parsing & matching paths against rules
 
 main.rs:
 ```rust
@@ -33,18 +37,20 @@ extern crate robots_txt;
 use robots_txt::Robots;
 
 static ROBOTS: &'static str = r#"
+
 # robots.txt for http://www.site.com
 User-Agent: *
 Disallow: /cyberworld/map/ # this is an infinite virtual URL space
 # Cybermapper knows where to go
 User-Agent: cybermapper
 Disallow:
+
 "#;
 
 fn main() {
     let robots = Robots::from_str(ROBOTS);
 
-    let matcher = SimpleMatcher::new(&robots.choose_section("AnyBot").rules);
+    let matcher = SimpleMatcher::new(&robots.choose_section("NoName Bot").rules);
     assert!(matcher.check_path("/some/page"));
     assert!(matcher.check_path("/cyberworld/welcome.html"));
     assert!(!matcher.check_path("/cyberworld/map/object.html"));
@@ -54,6 +60,63 @@ fn main() {
     assert!(matcher.check_path("/cyberworld/welcome.html"));
     assert!(matcher.check_path("/cyberworld/map/object.html"));
 }
+```
+
+
+### Building & rendering
+
+main.rs:
+```rust
+extern crate robots_txt;
+
+use robots_txt::Robots;
+
+fn main() {
+    let robots1 = Robots::start_build()
+        .start_section_for("cybermapper")
+            .disallow("")
+            .end_section()
+        .start_section_for("*")
+            .disallow("/cyberworld/map/")
+            .end_section()
+        .finalize();
+
+    let robots2 = Robots::start_build()
+        .start_section_for("*")
+            .disallow("/private")
+            .disallow("")
+            .crawl_delay(5)
+            .request_rate(1, 5)
+            .sitemap("http://example.com/sitemap.xml".parse().unwrap())
+            .host("example.com")
+            .end_section()
+        .finalize();
+        
+    println!("# robots.txt for http://cyber.example.com/\n\n{}", robots1);
+    println!("# robots.txt for http://example.com/\n\n{}", robots2);
+}
+```
+As a result we get
+```
+# robots.txt for http://cyber.example.com/
+
+User-agent: cybermapper
+Disallow:
+
+User-agent: *
+Disallow: /cyberworld/map/
+
+
+# robots.txt for http://example.com/
+
+User-agent: *
+Disallow: /private
+Disallow:
+Crawl-delay: 5
+Request-rate: 1/5
+Sitemap: http://example.com/sitemap.xml
+Host: example.com
+
 ```
 
 

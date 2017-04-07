@@ -73,7 +73,6 @@ impl <'a> SimpleMatcher<'a> {
 
 #[cfg(test)]
 mod tests {
-    use robots::Robots;
     use super::*;
 
     static ROBOTS1: &'static str = r#"
