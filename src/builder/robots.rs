@@ -5,6 +5,7 @@ use prelude::*;
 pub struct RobotsBuilder<'a> {
     default_section: Option<Section<'a>>,
     sections: Vec<Section<'a>>,
+    host: Option<Cow<'a, str>>,
 }
 
 impl<'a> RobotsBuilder<'a> {
@@ -32,6 +33,11 @@ impl<'a> RobotsBuilder<'a> {
             .useragent(ua)
     }
 
+    pub fn host<U>(mut self, host: U) -> Self where U: Into<Cow<'static, str>> {
+        self.host = Some(host.into());
+        self
+    }
+
     pub fn finalize(self) -> Robots<'a> {
         let default_section = match self.default_section {
             Some(default_section) => default_section,
@@ -40,6 +46,7 @@ impl<'a> RobotsBuilder<'a> {
         Robots {
             default_section: default_section,
             sections: self.sections,
+            host: self.host,
         }
     }
 }

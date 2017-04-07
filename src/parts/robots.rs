@@ -1,3 +1,4 @@
+use std::borrow::Cow;
 use std::ascii::AsciiExt;
 
 use prelude::*;
@@ -7,6 +8,7 @@ use prelude::*;
 pub struct Robots<'a> {
     pub default_section: Section<'a>,
     pub sections: Vec<Section<'a>>,
+    pub host: Option<Cow<'a, str>>,
 }
 
 impl <'a> Render for Robots<'a> {
@@ -15,6 +17,9 @@ impl <'a> Render for Robots<'a> {
             section.render_to(w)?;
         }
         self.default_section.render_to(w)?;
+        if let Some(host) = self.host.as_ref() {
+            writeln!(w, "Host: {}", host)?;
+        }
         Ok(())
     }
 }
@@ -59,7 +64,7 @@ impl <'a> Robots<'a> {
                         robots.section.push_sitemap(v).ok();
                     },
                     k if "host".eq_ignore_ascii_case(k) => {
-                        robots.section.host = Some(Cow::from(v))
+                        robots.set_host(v)
                     },
                     k if "crawl-delay".eq_ignore_ascii_case(k) => {
                         v.parse().map(|v| robots.section.crawl_delay = Some(v)).ok();
@@ -110,6 +115,7 @@ struct Constructor<'a> {
     pub default_section: Option<Section<'a>>,
     pub sections: Vec<Section<'a>>,
     pub section: Section<'a>,
+    pub host: Option<Cow<'a, str>>,
 }
 
 impl <'a> Default for Constructor<'a> {
@@ -118,11 +124,19 @@ impl <'a> Default for Constructor<'a> {
             default_section: None,
             sections: Vec::new(),
             section: Section::empty(),
+            host: None,
         }
     }
 }
 
 impl <'a> Constructor<'a> {
+    pub fn set_host<H>(&mut self, host: H) where H: Into<Cow<'a, str>>{
+        // Take into account only the first `Host` directive
+        if self.host.is_none() {
+            self.host = Some(host.into())
+        }
+    }
+
     pub fn end_section(&mut self) {
         if self.section.is_empty() {
             return;
@@ -142,6 +156,7 @@ impl <'a> Constructor<'a> {
         Robots {
             default_section: self.default_section.unwrap_or_default(),
             sections: self.sections,
+            host: self.host,
         }
     }
 }
@@ -221,8 +236,8 @@ Disallow: /private
 Crawl-delay: 5
 Request-rate: 3/10
 Sitemap: http://example.com/sitemap.xml
-Host: example.com
 
+Host: example.com
 "#;
 
 

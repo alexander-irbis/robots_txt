@@ -82,13 +82,13 @@ fn main() {
         .finalize();
 
     let robots2 = Robots::start_build()
+        .host("example.com")
         .start_section_for("*")
             .disallow("/private")
             .disallow("")
             .crawl_delay(5)
             .request_rate(1, 5)
             .sitemap("http://example.com/sitemap.xml".parse().unwrap())
-            .host("example.com")
             .end_section()
         .finalize();
         
@@ -115,6 +115,7 @@ Disallow:
 Crawl-delay: 5
 Request-rate: 1/5
 Sitemap: http://example.com/sitemap.xml
+
 Host: example.com
 
 ```

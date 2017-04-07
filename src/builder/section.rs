@@ -4,6 +4,7 @@ use std::collections::BTreeSet;
 use prelude::*;
 
 
+#[derive(Clone, Debug)]
 pub struct SectionBuilder<'a> {
     robots: RobotsBuilder<'a>,
     rules: Vec<Rule<'a>>,
@@ -11,7 +12,6 @@ pub struct SectionBuilder<'a> {
     sitemaps: BTreeSet<Url>,
     crawl_delay: Option<usize>,
     req_rate: Option<RequestRate>,
-    host: Option<Cow<'a, str>>,
 }
 
 impl<'a> SectionBuilder<'a> {
@@ -23,7 +23,6 @@ impl<'a> SectionBuilder<'a> {
             sitemaps: Default::default(),
             crawl_delay: None,
             req_rate: None,
-            host: None,
         }
     }
 
@@ -57,11 +56,6 @@ impl<'a> SectionBuilder<'a> {
         self
     }
 
-    pub fn host<U>(mut self, host: U) -> Self where U: Into<Cow<'static, str>> {
-        self.host = Some(host.into());
-        self
-    }
-
     pub fn end_section(self) -> RobotsBuilder<'a> {
         self.robots.section(Section {
             crawl_delay: self.crawl_delay,
@@ -69,7 +63,6 @@ impl<'a> SectionBuilder<'a> {
             rules: self.rules,
             sitemaps: self.sitemaps,
             useragents: self.useragents,
-            host: self.host,
         })
     }
 }

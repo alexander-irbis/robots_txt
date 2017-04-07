@@ -11,7 +11,6 @@ pub struct Section<'a> {
     pub rules: Vec<Rule<'a>>,
     pub sitemaps: BTreeSet<Url>,
     pub useragents: BTreeSet<Cow<'a, str>>,
-    pub host: Option<Cow<'a, str>>,
 }
 
 impl <'a> Default for Section<'a> {
@@ -22,7 +21,6 @@ impl <'a> Default for Section<'a> {
             rules: vec![ Rule::disallow("") ],
             sitemaps: BTreeSet::new(),
             useragents: BTreeSet::from_iter(Some(Cow::from("*")).into_iter()),
-            host: None,
         }
     }
 }
@@ -44,9 +42,6 @@ impl <'a> Render for Section<'a> {
         for url in &self.sitemaps {
             writeln!(w, "Sitemap: {}", url)?;
         }
-        if let Some(host) = self.host.as_ref() {
-            writeln!(w, "Host: {}", host)?;
-        }
         writeln!(w)
     }
 }
@@ -59,14 +54,12 @@ impl <'a> Section<'a> {
             rules: Vec::new(),
             sitemaps: BTreeSet::new(),
             useragents: BTreeSet::new(),
-            host: None,
         }
     }
 
     pub fn is_empty(&self) -> bool {
         self.crawl_delay.is_none()
             && self.req_rate.is_none()
-            && self.host.is_none()
             && self.rules.is_empty()
             && self.sitemaps.is_empty()
             && self.useragents.is_empty()
@@ -76,7 +69,6 @@ impl <'a> Section<'a> {
         !self.rules.is_empty()
             || self.crawl_delay.is_some()
             || self.req_rate.is_some()
-            || self.host.is_some()
             || !self.sitemaps.is_empty()
     }
 
