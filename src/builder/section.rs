@@ -10,7 +10,7 @@ pub struct SectionBuilder<'a> {
     rules: Vec<Rule<'a>>,
     useragents: BTreeSet<Cow<'a, str>>,
     sitemaps: BTreeSet<Url>,
-    crawl_delay: Option<usize>,
+    crawl_delay: Option<f64>,
     req_rate: Option<RequestRate>,
 }
 
@@ -46,7 +46,7 @@ impl<'a> SectionBuilder<'a> {
         self
     }
 
-    pub fn crawl_delay(mut self, delay: usize) -> Self {
+    pub fn crawl_delay(mut self, delay: f64) -> Self {
         self.crawl_delay = Some(delay);
         self
     }

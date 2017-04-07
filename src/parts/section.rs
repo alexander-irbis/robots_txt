@@ -4,9 +4,9 @@ use std::iter::FromIterator;
 use prelude::*;
 
 
-#[derive(Clone, Debug, Eq, PartialEq)]
+#[derive(Clone, Debug, PartialEq)]
 pub struct Section<'a> {
-    pub crawl_delay: Option<usize>,
+    pub crawl_delay: Option<f64>,
     pub req_rate: Option<RequestRate>,
     pub rules: Vec<Rule<'a>>,
     pub sitemaps: BTreeSet<Url>,

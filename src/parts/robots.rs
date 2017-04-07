@@ -4,7 +4,7 @@ use std::ascii::AsciiExt;
 use prelude::*;
 
 
-#[derive(Clone, Debug, Default, Eq, PartialEq)]
+#[derive(Clone, Debug, Default, PartialEq)]
 pub struct Robots<'a> {
     pub default_section: Section<'a>,
     pub sections: Vec<Section<'a>>,
@@ -223,8 +223,8 @@ Disallow: /
 User-Agent: *
 Disallow:
 Disallow: /private
-Crawl-delay: 5
-Request-Rate: 3/10
+Crawl-delay: 4.5
+Request-Rate: 9/20
 Sitemap: http://example.com/sitemap.xml
 Host: example.com
 "#;
@@ -233,8 +233,8 @@ Host: example.com
 User-agent: *
 Disallow:
 Disallow: /private
-Crawl-delay: 5
-Request-rate: 3/10
+Crawl-delay: 4.5
+Request-rate: 9/20
 Sitemap: http://example.com/sitemap.xml
 
 Host: example.com

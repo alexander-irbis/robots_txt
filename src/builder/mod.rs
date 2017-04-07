@@ -23,8 +23,8 @@ Disallow: /cyberworld/map/
 User-agent: *
 Disallow: /private
 Disallow:
-Crawl-delay: 5
-Request-rate: 1/5
+Crawl-delay: 4.5
+Request-rate: 9/20
 Sitemap: http://example.com/sitemap.xml
 
 Host: example.com
@@ -57,8 +57,8 @@ Host: example.com
             .start_section_for("*")
                 .disallow("/private")
                 .disallow("")
-                .crawl_delay(5)
-                .request_rate(1, 5)
+                .crawl_delay(4.5)
+                .request_rate(9, 20)
                 .sitemap("http://example.com/sitemap.xml".parse().unwrap())
                 .end_section()
             .finalize();
