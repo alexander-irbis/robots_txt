@@ -25,7 +25,7 @@ Robots_txt is [available on crates.io](https://crates.io/crates/robots_txt) and 
 Cargo.toml:
 ```toml
 [dependencies]
-robots_txt = "0.4"
+robots_txt = "0.5"
 ```
 
 ### Parsing & matching paths against rules
