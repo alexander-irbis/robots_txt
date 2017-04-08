@@ -33,7 +33,7 @@ impl<'a> RobotsBuilder<'a> {
             .useragent(ua)
     }
 
-    pub fn host<U>(mut self, host: U) -> Self where U: Into<Cow<'static, str>> {
+    pub fn host<U>(mut self, host: U) -> Self where U: Into<Cow<'a, str>> {
         self.host = Some(host.into());
         self
     }
