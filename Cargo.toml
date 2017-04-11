@@ -18,6 +18,8 @@ exclude = [
 #build = "build.rs"
 publish = true
 
+[badges]
+travis-ci = { repository = "alexander-irbis/robots_txt" }
 
 [dependencies]
 url         = "^1.0"
