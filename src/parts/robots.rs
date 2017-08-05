@@ -35,6 +35,8 @@ impl <'a> Robots<'a> {
         RobotsBuilder::build()
     }
 
+    // TODO change API to avoid this naming conflict
+    #[cfg_attr(feature = "clippy", allow(should_implement_trait))]
     pub fn from_str(input: &'a str) -> Robots<'a> {
 
         let mut robots = Constructor::default();

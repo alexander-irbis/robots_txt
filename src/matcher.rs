@@ -21,7 +21,7 @@ impl <'a> SimpleMatcher<'a> {
             match (rule.allow, rule.path.as_ref()) {
                 // FIXME this rule must be filtered in a section
                 (true,  "")  => continue,
-                (false, "")  => global_rule = Some(true),
+                (false, "") |
                 (true,  "/") => global_rule = Some(true),
                 (false, "/") => global_rule = Some(false),
                 (true,  _)   => has_allow = true,
