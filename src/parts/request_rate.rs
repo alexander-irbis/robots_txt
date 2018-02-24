@@ -9,10 +9,7 @@ pub struct RequestRate {
 
 impl RequestRate {
     pub fn new(requests: usize, seconds: usize) -> Self {
-        RequestRate {
-            requests: requests,
-            seconds: seconds
-        }
+        RequestRate { requests, seconds }
     }
 
     pub fn into_duration(self) -> Duration {
@@ -38,6 +35,9 @@ mod tests {
 
     #[test]
     fn render() {
-        assert_eq!("Request-rate: 3/10\n", RequestRate::new(3, 10).render().unwrap());
+        assert_eq!(
+            "Request-rate: 3/10\n",
+            RequestRate::new(3, 10).render().unwrap()
+        );
     }
 }

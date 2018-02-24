@@ -1,8 +1,101 @@
+branches:
+  only:
+    - master
+    - staging
+    - trying
+
+dist: trusty
+sudo: false
+
+addons:
+  apt:
+    packages:
+    - gcc
+    - g++
+    - libssl-dev
+    - libelf-dev
+    - libdw-dev
+    - binutils-dev
+    - libiberty-dev
+    - pkg-config
+
 language: rust
+
 rust:
   - stable
-  - beta
-  - nightly
+
 matrix:
   allow_failures:
     - rust: nightly
+
+cache:
+  directories:
+  - "$HOME/.cargo"
+  - "$HOME/.local"
+  - "$TRAVIS_BUILD_DIR/target"
+
+env:
+  global:
+  - CLIPPY_VERS=0.0.186
+  - RUSTFMT_VERS=0.9.0
+  - DEADLINKS_VERS=0.3.0
+  - RUSTFLAGS="-C link-dead-code"
+  - RUST_LOG=off
+
+install:
+- |
+  if [[ "$FEATURE" == "clippy" ]]; then
+    cargo clippy --version | grep $CLIPPY_VERS || cargo install clippy --force --vers $CLIPPY_VERS
+  fi
+- |
+  if [[ "$FEATURE" == "non-fatal-checks" ]]; then
+    cargo-deadlinks -V | grep $DEADLINKS_VERS || cargo install cargo-deadlinks --vers $DEADLINKS_VERS --force
+  fi
+- |
+  if [[ "$FEATURE" == "fmt" ]]; then
+    rustfmt -V | grep $RUSTFMT_VERS || cargo install rustfmt --vers $RUSTFMT_VERS --force
+  fi
+- cargo install --list
+- cd $TRAVIS_BUILD_DIR
+- cargo update
+
+script: skip
+
+jobs:
+  include:
+  - stage: test
+    env:
+    - FEATURE=non-fatal-checks
+    script:
+    - cargo doc --no-deps && cargo deadlinks --dir target/doc || true
+  - stage: test
+    env:
+    - FEATURE=fmt
+    script:
+    - cargo fmt -- --write-mode=diff
+  - stage: test
+    rust: nightly-2018-02-14
+    env:
+    - FEATURE=clippy
+    script:
+    - cargo clippy -- -D warnings
+  - stage: test
+    rust: nightly-2018-02-14
+    script:
+    - cargo test --verbose --all
+  - stage: test
+    rust: 1.17.0
+    script:
+    - cargo test --verbose --all
+  - stage: test
+    rust: stable
+    script:
+    - cargo test --verbose --all
+  - stage: test
+    rust: beta
+    script:
+    - cargo test --verbose --all
+  - stage: test
+    rust: nightly
+    script:
+    - cargo test --verbose --all

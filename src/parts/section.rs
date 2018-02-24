@@ -13,19 +13,19 @@ pub struct Section<'a> {
     pub useragents: BTreeSet<Cow<'a, str>>,
 }
 
-impl <'a> Default for Section<'a> {
+impl<'a> Default for Section<'a> {
     fn default() -> Self {
         Section {
             crawl_delay: None,
             req_rate: None,
-            rules: vec![ Rule::disallow("") ],
+            rules: vec![Rule::disallow("")],
             sitemaps: BTreeSet::new(),
             useragents: BTreeSet::from_iter(Some(Cow::from("*")).into_iter()),
         }
     }
 }
 
-impl <'a> Render for Section<'a> {
+impl<'a> Render for Section<'a> {
     fn render_to<W: fmt::Write>(&self, w: &mut W) -> fmt::Result {
         for ua in &self.useragents {
             writeln!(w, "User-agent: {}", ua)?;
@@ -46,7 +46,7 @@ impl <'a> Render for Section<'a> {
     }
 }
 
-impl <'a> Section<'a> {
+impl<'a> Section<'a> {
     pub fn empty() -> Self {
         Section {
             crawl_delay: None,
@@ -58,18 +58,13 @@ impl <'a> Section<'a> {
     }
 
     pub fn is_empty(&self) -> bool {
-        self.crawl_delay.is_none()
-            && self.req_rate.is_none()
-            && self.rules.is_empty()
-            && self.sitemaps.is_empty()
-            && self.useragents.is_empty()
+        self.crawl_delay.is_none() && self.req_rate.is_none() && self.rules.is_empty() &&
+            self.sitemaps.is_empty() && self.useragents.is_empty()
     }
 
     pub fn has_rules(&self) -> bool {
-        !self.rules.is_empty()
-            || self.crawl_delay.is_some()
-            || self.req_rate.is_some()
-            || !self.sitemaps.is_empty()
+        !self.rules.is_empty() || self.crawl_delay.is_some() || self.req_rate.is_some() ||
+            !self.sitemaps.is_empty()
     }
 
     pub fn is_default(&self) -> bool {
@@ -94,7 +89,10 @@ impl <'a> Section<'a> {
         }
     }
 
-    pub fn push_ua<U>(&mut self, ua: U) where U: Into<Cow<'a, str>> {
+    pub fn push_ua<U>(&mut self, ua: U)
+    where
+        U: Into<Cow<'a, str>>,
+    {
         if self.is_default() {
             return;
         }
@@ -110,8 +108,7 @@ impl <'a> Section<'a> {
     }
 
     pub fn push_sitemap(&mut self, url: &str) -> Result<(), UrlParseError> {
-        Url::parse(url)
-            .map(|url| { self.sitemaps.insert(url); } )
+        Url::parse(url).map(|url| { self.sitemaps.insert(url); })
     }
 }
 
@@ -122,7 +119,10 @@ mod tests {
 
     #[test]
     fn render() {
-        assert_eq!("User-agent: *\nDisallow:\n\n", Section::default().render().unwrap());
+        assert_eq!(
+            "User-agent: *\nDisallow:\n\n",
+            Section::default().render().unwrap()
+        );
     }
 
     #[test]
