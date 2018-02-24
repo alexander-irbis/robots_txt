@@ -1,4 +1,5 @@
 use std::borrow::Cow;
+#[allow(unused_imports)]
 use std::ascii::AsciiExt;
 
 use prelude::*;
@@ -11,7 +12,7 @@ pub struct Robots<'a> {
     pub host: Option<Cow<'a, str>>,
 }
 
-impl <'a> Render for Robots<'a> {
+impl<'a> Render for Robots<'a> {
     fn render_to<W: fmt::Write>(&self, w: &mut W) -> fmt::Result {
         for section in &self.sections {
             section.render_to(w)?;
@@ -24,19 +25,19 @@ impl <'a> Render for Robots<'a> {
     }
 }
 
-impl <'a> fmt::Display for Robots<'a> {
+impl<'a> fmt::Display for Robots<'a> {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         self.render_to(f)
     }
 }
 
-impl <'a> Robots<'a> {
+impl<'a> Robots<'a> {
     pub fn start_build() -> RobotsBuilder<'a> {
         RobotsBuilder::build()
     }
 
     // TODO change API to avoid this naming conflict
-    #[cfg_attr(feature = "clippy", allow(should_implement_trait))]
+    #[cfg_attr(feature = "cargo-clippy", allow(should_implement_trait))]
     pub fn from_str(input: &'a str) -> Robots<'a> {
 
         let mut robots = Constructor::default();
@@ -45,52 +46,57 @@ impl <'a> Robots<'a> {
             let (line, comment) = strip_comment(line);
             match split_kv(line) {
                 // Comment line, just skip
-                None if comment.is_some() => {},
+                None if comment.is_some() => {}
                 // Empty line
                 None => robots.end_section(),
                 // Some statement
-                Some((k, v)) => match k {
-                    k if "user-agent".eq_ignore_ascii_case(k) => {
-                        if robots.section.has_rules() {
-                            robots.end_section();
+                Some((k, v)) => {
+                    match k {
+                        k if "user-agent".eq_ignore_ascii_case(k) => {
+                            if robots.section.has_rules() {
+                                robots.end_section();
+                            }
+                            robots.section.push_ua(v);
                         }
-                        robots.section.push_ua(v);
-                    },
-                    k if "disallow".eq_ignore_ascii_case(k) => {
-                        robots.section.push_rule(Rule::disallow(v));
-                    },
-                    k if "allow".eq_ignore_ascii_case(k) => {
-                        robots.section.push_rule(Rule::allow(v));
-                    },
-                    k if "sitemap".eq_ignore_ascii_case(k) => {
-                        robots.section.push_sitemap(v).ok();
-                    },
-                    k if "host".eq_ignore_ascii_case(k) => {
-                        robots.set_host(v)
-                    },
-                    k if "crawl-delay".eq_ignore_ascii_case(k) => {
-                        v.parse().map(|v| robots.section.crawl_delay = Some(v)).ok();
-                    },
-                    k if "request-rate".eq_ignore_ascii_case(k) => {
-                        if let Some((r, s)) = split_rr(v) {
-                            r.parse().and_then(
-                                |r| s.parse().map(
-                                    |s| robots.section.req_rate = Some(RequestRate::new(r, s))
-                                )
-                            ).ok();
+                        k if "disallow".eq_ignore_ascii_case(k) => {
+                            robots.section.push_rule(Rule::disallow(v));
                         }
-                    },
+                        k if "allow".eq_ignore_ascii_case(k) => {
+                            robots.section.push_rule(Rule::allow(v));
+                        }
+                        k if "sitemap".eq_ignore_ascii_case(k) => {
+                            robots.section.push_sitemap(v).ok();
+                        }
+                        k if "host".eq_ignore_ascii_case(k) => robots.set_host(v),
+                        k if "crawl-delay".eq_ignore_ascii_case(k) => {
+                            v.parse().map(|v| robots.section.crawl_delay = Some(v)).ok();
+                        }
+                        k if "request-rate".eq_ignore_ascii_case(k) => {
+                            if let Some((r, s)) = split_rr(v) {
+                                r.parse()
+                                    .and_then(|r| {
+                                        s.parse().map(|s| {
+                                            robots.section.req_rate = Some(RequestRate::new(r, s))
+                                        })
+                                    })
+                                    .ok();
+                            }
+                        }
 
-                    // "Unrecognised headers are ignored"
-                    _ => {}
-                },
+                        // "Unrecognised headers are ignored"
+                        _ => {}
+                    }
+                }
             }
         }
 
         robots.finalize()
     }
 
-    pub fn choose_section<U>(&self, ua: U) -> &Section<'a> where U: AsRef<str> {
+    pub fn choose_section<U>(&self, ua: U) -> &Section<'a>
+    where
+        U: AsRef<str>,
+    {
         let ua: &str = ua.as_ref();
         if !ua.is_empty() {
             for section in &self.sections {
@@ -98,12 +104,12 @@ impl <'a> Robots<'a> {
                     if ua2.len() > ua.len() {
                         continue;
                     }
-                    let matches = (0 .. ua.len() - ua2.len() + 1)
-                        .map(|i| &ua[i .. i + ua2.len()])
+                    let matches = (0..ua.len() - ua2.len() + 1)
+                        .map(|i| &ua[i..i + ua2.len()])
                         .any(|s: &str| s.eq_ignore_ascii_case(ua2));
 
                     if matches {
-                        return section
+                        return section;
                     }
                 }
             }
@@ -120,7 +126,7 @@ struct Constructor<'a> {
     pub host: Option<Cow<'a, str>>,
 }
 
-impl <'a> Default for Constructor<'a> {
+impl<'a> Default for Constructor<'a> {
     fn default() -> Self {
         Constructor {
             default_section: None,
@@ -131,8 +137,11 @@ impl <'a> Default for Constructor<'a> {
     }
 }
 
-impl <'a> Constructor<'a> {
-    pub fn set_host<H>(&mut self, host: H) where H: Into<Cow<'a, str>>{
+impl<'a> Constructor<'a> {
+    pub fn set_host<H>(&mut self, host: H)
+    where
+        H: Into<Cow<'a, str>>,
+    {
         // Take into account only the first `Host` directive
         if self.host.is_none() {
             self.host = Some(host.into())
@@ -144,12 +153,13 @@ impl <'a> Constructor<'a> {
             return;
         }
         let section = ::std::mem::replace(&mut self.section, Section::empty());
-        match section.is_default() {
-            true => match self.default_section {
+        if section.is_default() {
+            match self.default_section {
                 Some(ref mut default_section) => default_section.merge(section),
                 None => self.default_section = Some(section),
-            },
-            false => self.sections.push(section),
+            }
+        } else {
+            self.sections.push(section)
         }
     }
 
@@ -170,7 +180,10 @@ mod tests {
 
     #[test]
     fn render() {
-        assert_eq!("User-agent: *\nDisallow:\n\n", Robots::default().render().unwrap());
+        assert_eq!(
+            "User-agent: *\nDisallow:\n\n",
+            Robots::default().render().unwrap()
+        );
     }
 
 

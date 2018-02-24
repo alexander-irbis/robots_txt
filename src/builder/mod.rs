@@ -41,11 +41,11 @@ Host: example.com
 
         let robots = Robots::start_build()
             .start_section_for("cybermapper")
-                .disallow("")
-                .end_section()
+            .disallow("")
+            .end_section()
             .start_section_for("*")
-                .disallow("/cyberworld/map/")
-                .end_section()
+            .disallow("/cyberworld/map/")
+            .end_section()
             .finalize();
 
         test(robots, RESULT1);
@@ -55,12 +55,12 @@ Host: example.com
         let robots = Robots::start_build()
             .host("example.com")
             .start_section_for("*")
-                .disallow("/private")
-                .disallow("")
-                .crawl_delay(4.5)
-                .request_rate(9, 20)
-                .sitemap("http://example.com/sitemap.xml".parse().unwrap())
-                .end_section()
+            .disallow("/private")
+            .disallow("")
+            .crawl_delay(4.5)
+            .request_rate(9, 20)
+            .sitemap("http://example.com/sitemap.xml".parse().unwrap())
+            .end_section()
             .finalize();
 
         test(robots, RESULT2);

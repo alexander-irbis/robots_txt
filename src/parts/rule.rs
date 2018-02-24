@@ -9,28 +9,29 @@ pub struct Rule<'a> {
 
 impl<'a> Rule<'a> {
     pub fn new<P>(allow: bool, path: P) -> Self
-        where P: Into<Cow<'a, str>>
+    where
+        P: Into<Cow<'a, str>>,
     {
-        Rule {
-            allow: allow,
-            path: path.into(),
-        }
+        let path = path.into();
+        Rule { allow, path }
     }
 
     pub fn allow<P>(path: P) -> Self
-        where P: Into<Cow<'a, str>>
+    where
+        P: Into<Cow<'a, str>>,
     {
         Rule::new(true, path)
     }
 
     pub fn disallow<P>(path: P) -> Self
-        where P: Into<Cow<'a, str>>
+    where
+        P: Into<Cow<'a, str>>,
     {
         Rule::new(false, path)
     }
 }
 
-impl <'a> Render for Rule<'a> {
+impl<'a> Render for Rule<'a> {
     fn render_to<W: fmt::Write>(&self, w: &mut W) -> fmt::Result {
         match self.allow {
             true => write!(w, "Allow:")?,

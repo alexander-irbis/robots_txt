@@ -26,17 +26,26 @@ impl<'a> SectionBuilder<'a> {
         }
     }
 
-    pub fn useragent<U>(mut self, ua: U) -> Self where U: Into<Cow<'static, str>> {
+    pub fn useragent<U>(mut self, ua: U) -> Self
+    where
+        U: Into<Cow<'static, str>>,
+    {
         self.useragents.insert(ua.into());
         self
     }
 
-    pub fn disallow<P>(mut self, path: P) -> Self where P: Into<Cow<'static, str>> {
+    pub fn disallow<P>(mut self, path: P) -> Self
+    where
+        P: Into<Cow<'static, str>>,
+    {
         self.rules.push(Rule::disallow(path));
         self
     }
 
-    pub fn allow<P>(mut self, path: P) -> Self where P: Into<Cow<'static, str>> {
+    pub fn allow<P>(mut self, path: P) -> Self
+    where
+        P: Into<Cow<'static, str>>,
+    {
         self.rules.push(Rule::allow(path));
         self
     }

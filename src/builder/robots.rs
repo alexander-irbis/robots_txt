@@ -14,12 +14,13 @@ impl<'a> RobotsBuilder<'a> {
     }
 
     pub fn section(mut self, section: Section<'a>) -> Self {
-        match section.is_default() {
-            false => self.sections.push(section),
-            true => match self.default_section {
+        if section.is_default() {
+            match self.default_section {
                 None => self.default_section = Some(section),
                 Some(ref mut default_section) => default_section.merge(section),
             }
+        } else {
+            self.sections.push(section);
         };
         self
     }
@@ -28,12 +29,17 @@ impl<'a> RobotsBuilder<'a> {
         SectionBuilder::build(self)
     }
 
-    pub fn start_section_for<U>(self, ua: U) -> SectionBuilder<'a> where U: Into<Cow<'static, str>> {
-        SectionBuilder::build(self)
-            .useragent(ua)
+    pub fn start_section_for<U>(self, ua: U) -> SectionBuilder<'a>
+    where
+        U: Into<Cow<'static, str>>,
+    {
+        SectionBuilder::build(self).useragent(ua)
     }
 
-    pub fn host<U>(mut self, host: U) -> Self where U: Into<Cow<'a, str>> {
+    pub fn host<U>(mut self, host: U) -> Self
+    where
+        U: Into<Cow<'a, str>>,
+    {
         self.host = Some(host.into());
         self
     }
