@@ -36,6 +36,25 @@ impl<'a> RobotsBuilder<'a> {
         SectionBuilder::build(self).useragent(ua)
     }
 
+    pub fn with_section<F>(self, f: F) -> Self
+    where
+        F: FnOnce(SectionBuilder<'a>) -> SectionBuilder<'a>,
+    {
+        let section = SectionBuilder::build(self);
+        let section = f(section);
+        section.end_section()
+    }
+
+    pub fn with_section_for<F, U>(self, ua: U, f: F) -> Self
+    where
+        F: FnOnce(SectionBuilder<'a>) -> SectionBuilder<'a>,
+        U: Into<Cow<'static, str>>,
+    {
+        let section = SectionBuilder::build(self).useragent(ua);
+        let section = f(section);
+        section.end_section()
+    }
+
     pub fn host<U>(mut self, host: U) -> Self
     where
         U: Into<Cow<'a, str>>,
