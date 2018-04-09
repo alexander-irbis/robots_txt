@@ -50,7 +50,7 @@ impl<'a> RobotsBuilder<'a> {
             None => Section::default(),
         };
         Robots {
-            default_section: default_section,
+            default_section,
             sections: self.sections,
             host: self.host,
         }

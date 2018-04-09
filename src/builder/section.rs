@@ -17,7 +17,7 @@ pub struct SectionBuilder<'a> {
 impl<'a> SectionBuilder<'a> {
     pub fn build(robots: RobotsBuilder<'a>) -> Self {
         SectionBuilder {
-            robots: robots,
+            robots,
             rules: Default::default(),
             useragents: Default::default(),
             sitemaps: Default::default(),
