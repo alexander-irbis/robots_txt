@@ -36,7 +36,7 @@ cache:
 
 env:
   global:
-  - CLIPPY_VERS=0.0.186
+  - CLIPPY_VERS=0.0.193
   - DEADLINKS_VERS=0.3.0
   - RUSTFLAGS="-C link-dead-code"
   - RUSTFMT_VERS=0.9.0
@@ -76,7 +76,7 @@ jobs:
 
   - env:
     - FEATURE=clippy
-    rust: nightly-2018-02-14
+    rust: nightly-2018-04-08
     script:
     - cargo clippy -- -D warnings
 
