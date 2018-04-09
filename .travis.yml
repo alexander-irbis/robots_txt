@@ -37,9 +37,9 @@ cache:
 env:
   global:
   - CLIPPY_VERS=0.0.186
-  - RUSTFMT_VERS=0.9.0
   - DEADLINKS_VERS=0.3.0
   - RUSTFLAGS="-C link-dead-code"
+  - RUSTFMT_VERS=0.9.0
   - RUST_LOG=off
 
 install:
@@ -68,34 +68,44 @@ jobs:
     - FEATURE=non-fatal-checks
     script:
     - cargo doc --no-deps && cargo deadlinks --dir target/doc || true
-  - stage: test
-    env:
+
+  - env:
     - FEATURE=fmt
     script:
     - cargo fmt -- --write-mode=diff
-  - stage: test
-    rust: nightly-2018-02-14
-    env:
+
+  - env:
     - FEATURE=clippy
+    rust: nightly-2018-02-14
     script:
     - cargo clippy -- -D warnings
-  - stage: test
-    rust: nightly-2018-02-14
-    script:
-    - cargo test --verbose --all
-  - stage: test
+
+  - env:
+    - FEATURE=test
     rust: 1.17.0
     script:
     - cargo test --verbose --all
-  - stage: test
+
+  - env:
+    - FEATURE=test
     rust: stable
     script:
     - cargo test --verbose --all
-  - stage: test
+
+  - env:
+    - FEATURE=test
     rust: beta
     script:
     - cargo test --verbose --all
-  - stage: test
+
+  - env:
+    - FEATURE=test
+    rust: nightly-2018-04-08
+    script:
+    - cargo test --verbose --all
+
+  - env:
+    - FEATURE=test
     rust: nightly
     script:
     - cargo test --verbose --all
