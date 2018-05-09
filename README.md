@@ -3,8 +3,8 @@
 [![crates.io](https://img.shields.io/crates/v/robots_txt.svg)](https://crates.io/crates/robots_txt)
 
 [![Build Status](https://travis-ci.org/alexander-irbis/robots_txt.svg)](https://travis-ci.org/alexander-irbis/robots_txt)
-![Minimal rust version 1.17](https://img.shields.io/badge/stable-1.17+-green.svg)
-![Nightly rust version from April 08, 2018](https://img.shields.io/badge/nightly-2018--04--08-yellow.svg)
+![Minimal rust version 1.21](https://img.shields.io/badge/stable-1.21+-green.svg)
+![Nightly rust version from May 08, 2018](https://img.shields.io/badge/nightly-2018--05--08-yellow.svg)
 
 
 # robots_txt
