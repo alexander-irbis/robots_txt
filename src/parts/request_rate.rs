@@ -1,6 +1,5 @@
 use prelude::*;
 
-
 #[derive(Clone, Copy, Debug, Default, Eq, PartialEq)]
 pub struct RequestRate {
     pub requests: usize,
@@ -27,7 +26,6 @@ impl Render for RequestRate {
         writeln!(w, "Request-rate: {}/{}", self.requests, self.seconds)
     }
 }
-
 
 #[cfg(test)]
 mod tests {

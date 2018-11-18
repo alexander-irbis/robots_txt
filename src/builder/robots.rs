@@ -1,6 +1,5 @@
 use prelude::*;
 
-
 #[derive(Clone, Debug, Default)]
 pub struct RobotsBuilder<'a> {
     default_section: Option<Section<'a>>,

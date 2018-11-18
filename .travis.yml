@@ -36,25 +36,11 @@ cache:
 
 env:
   global:
-  - CLIPPY_VERS=0.0.197
   - DEADLINKS_VERS=0.3.0
   - RUSTFLAGS="-C link-dead-code"
-  - RUSTFMT_VERS=0.9.0
   - RUST_LOG=off
 
 install:
-- |
-  if [[ "$FEATURE" == "clippy" ]]; then
-    cargo clippy --version | grep $CLIPPY_VERS || cargo install clippy --force --vers $CLIPPY_VERS
-  fi
-- |
-  if [[ "$FEATURE" == "non-fatal-checks" ]]; then
-    cargo-deadlinks -V | grep $DEADLINKS_VERS || cargo install cargo-deadlinks --vers $DEADLINKS_VERS --force
-  fi
-- |
-  if [[ "$FEATURE" == "fmt" ]]; then
-    rustfmt -V | grep $RUSTFMT_VERS || cargo install rustfmt --vers $RUSTFMT_VERS --force
-  fi
 - cargo install --list
 - cd $TRAVIS_BUILD_DIR
 - cargo update
@@ -65,24 +51,8 @@ jobs:
   include:
   - stage: test
     env:
-    - FEATURE=non-fatal-checks
-    script:
-    - cargo doc --no-deps && cargo deadlinks --dir target/doc || true
-
-  - env:
-    - FEATURE=fmt
-    script:
-    - cargo fmt -- --write-mode=diff
-
-  - env:
-    - FEATURE=clippy
-    rust: nightly-2018-05-08
-    script:
-    - cargo clippy -- -D warnings
-
-  - env:
     - FEATURE=test
-    rust: 1.21.0
+    rust: 1.26.0
     script:
     - cargo test --verbose --all
 
@@ -100,7 +70,7 @@ jobs:
 
   - env:
     - FEATURE=test
-    rust: nightly-2018-05-08
+    rust: nightly-2018-11-18
     script:
     - cargo test --verbose --all
 
@@ -109,3 +79,30 @@ jobs:
     rust: nightly
     script:
     - cargo test --verbose --all
+
+  - stage: quality
+    env:
+    - FEATURE=non-fatal-checks
+    rust: stable
+    install:
+    - cargo-deadlinks -V | grep $DEADLINKS_VERS || cargo install cargo-deadlinks --vers $DEADLINKS_VERS --force
+    script:
+    - cargo doc --no-deps && cargo deadlinks --dir target/doc || true
+
+  - stage: quality
+    env:
+    - FEATURE=fmt
+    rust: stable
+    install:
+    - rustup component add rustfmt-preview
+    script:
+    - cargo fmt -- --check
+
+  - stage: quality
+    rust: stable
+    env:
+    - FEATURE=clippy
+    install:
+    - rustup component add clippy-preview
+    script:
+    - cargo clippy -- -D warnings

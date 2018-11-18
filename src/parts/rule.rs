@@ -1,6 +1,5 @@
 use prelude::*;
 
-
 #[derive(Clone, Debug, Default, Eq, PartialEq)]
 pub struct Rule<'a> {
     pub allow: bool,
@@ -43,7 +42,6 @@ impl<'a> Render for Rule<'a> {
         writeln!(w)
     }
 }
-
 
 #[cfg(test)]
 mod tests {

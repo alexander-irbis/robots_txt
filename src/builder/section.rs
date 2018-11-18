@@ -3,7 +3,6 @@ use std::collections::BTreeSet;
 
 use prelude::*;
 
-
 #[derive(Clone, Debug)]
 pub struct SectionBuilder<'a> {
     robots: RobotsBuilder<'a>,
