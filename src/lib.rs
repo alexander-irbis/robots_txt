@@ -1,8 +1,6 @@
 #![cfg_attr(feature = "cargo-clippy", allow(items_after_statements))]
 #![cfg_attr(feature = "cargo-clippy", allow(match_bool))]
-
 #![cfg_attr(feature = "release", deny(warnings))]
-
 
 //! # Standard
 //!
@@ -18,7 +16,6 @@
 //! * Request-rate
 //! * Sitemap
 //! * Host
-
 
 pub extern crate url;
 

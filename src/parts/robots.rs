@@ -1,9 +1,8 @@
-use std::borrow::Cow;
 #[allow(unused_imports, deprecated)]
 use std::ascii::AsciiExt;
+use std::borrow::Cow;
 
 use prelude::*;
-
 
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct Robots<'a> {
@@ -39,7 +38,6 @@ impl<'a> Robots<'a> {
     // TODO change API to avoid this naming conflict
     #[cfg_attr(feature = "cargo-clippy", allow(should_implement_trait))]
     pub fn from_str(input: &'a str) -> Robots<'a> {
-
         let mut robots = Constructor::default();
 
         for line in input.lines() {
@@ -78,8 +76,7 @@ impl<'a> Robots<'a> {
                                         s.parse().map(|s| {
                                             robots.section.req_rate = Some(RequestRate::new(r, s))
                                         })
-                                    })
-                                    .ok();
+                                    }).ok();
                             }
                         }
 
@@ -104,7 +101,7 @@ impl<'a> Robots<'a> {
                     if ua2.len() > ua.len() {
                         continue;
                     }
-                    let matches = (0..ua.len() - ua2.len() + 1)
+                    let matches = (0..=ua.len() - ua2.len())
                         .map(|i| &ua[i..i + ua2.len()])
                         .any(|s: &str| s.eq_ignore_ascii_case(ua2));
 
@@ -117,7 +114,6 @@ impl<'a> Robots<'a> {
         &self.default_section
     }
 }
-
 
 struct Constructor<'a> {
     pub default_section: Option<Section<'a>>,
@@ -173,7 +169,6 @@ impl<'a> Constructor<'a> {
     }
 }
 
-
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -185,7 +180,6 @@ mod tests {
             Robots::default().render().unwrap()
         );
     }
-
 
     static ROBOTS1: &'static str = r#"
 # robots.txt for http://www.site.com
@@ -200,7 +194,6 @@ Disallow: /cyberworld/map/
 Disallow: /tmp/
 
 "#;
-
 
     static ROBOTS2: &'static str = r#"
 # robots.txt for http://www.site.com
@@ -220,7 +213,6 @@ Disallow: /cyberworld/map/
 
 "#;
 
-
     static ROBOTS3: &'static str = r#"
 # robots.txt for http://www.site.com
 User-Agent: *
@@ -232,7 +224,6 @@ User-agent: *
 Disallow: /
 
 "#;
-
 
     static ROBOTS4: &'static str = r#"
 User-Agent: *
@@ -254,7 +245,6 @@ Sitemap: http://example.com/sitemap.xml
 
 Host: example.com
 "#;
-
 
     #[test]
     fn parse() {

@@ -3,7 +3,6 @@ use std::iter::FromIterator;
 
 use prelude::*;
 
-
 #[derive(Clone, Debug, PartialEq)]
 pub struct Section<'a> {
     pub crawl_delay: Option<f64>,
@@ -58,13 +57,18 @@ impl<'a> Section<'a> {
     }
 
     pub fn is_empty(&self) -> bool {
-        self.crawl_delay.is_none() && self.req_rate.is_none() && self.rules.is_empty() &&
-            self.sitemaps.is_empty() && self.useragents.is_empty()
+        self.crawl_delay.is_none()
+            && self.req_rate.is_none()
+            && self.rules.is_empty()
+            && self.sitemaps.is_empty()
+            && self.useragents.is_empty()
     }
 
     pub fn has_rules(&self) -> bool {
-        !self.rules.is_empty() || self.crawl_delay.is_some() || self.req_rate.is_some() ||
-            !self.sitemaps.is_empty()
+        !self.rules.is_empty()
+            || self.crawl_delay.is_some()
+            || self.req_rate.is_some()
+            || !self.sitemaps.is_empty()
     }
 
     pub fn is_default(&self) -> bool {
@@ -108,10 +112,11 @@ impl<'a> Section<'a> {
     }
 
     pub fn push_sitemap(&mut self, url: &str) -> Result<(), UrlParseError> {
-        Url::parse(url).map(|url| { self.sitemaps.insert(url); })
+        Url::parse(url).map(|url| {
+            self.sitemaps.insert(url);
+        })
     }
 }
-
 
 #[cfg(test)]
 mod tests {

@@ -3,7 +3,6 @@ use std::ascii::AsciiExt;
 
 use prelude::*;
 
-
 #[derive(Clone, Debug)]
 pub enum SimpleMatcher<'a> {
     GlobalRule(bool),
@@ -70,7 +69,6 @@ impl<'a> SimpleMatcher<'a> {
     }
 }
 
-
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -80,7 +78,6 @@ User-Agent: *
 Disallow: /cyberworld/map/ # this is an infinite virtual URL space
 Disallow: /tmp/ # these will soon disappear
 "#;
-
 
     static ROBOTS2: &'static str = r#"
 # robots.txt for http://www.site.com
@@ -122,6 +119,5 @@ Disallow:
         assert!(matcher.check_path("/some/page"));
         assert!(matcher.check_path("/cyberworld/welcome.html"));
         assert!(matcher.check_path("/cyberworld/map/object.html"));
-
     }
 }
