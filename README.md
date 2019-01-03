@@ -3,8 +3,8 @@
 [![crates.io](https://img.shields.io/crates/v/robots_txt.svg)](https://crates.io/crates/robots_txt)
 
 [![Build Status](https://travis-ci.org/alexander-irbis/robots_txt.svg)](https://travis-ci.org/alexander-irbis/robots_txt)
-![Minimal rust version 1.26](https://img.shields.io/badge/stable-1.26+-green.svg)
-![Nightly rust version from November 18, 2018](https://img.shields.io/badge/nightly-2018--11--18-yellow.svg)
+![Minimal rust version 1.31](https://img.shields.io/badge/stable-1.31+-green.svg)
+![Nightly rust version from December 18, 2018](https://img.shields.io/badge/nightly-2018--12--18-yellow.svg)
 
 
 # robots_txt
@@ -28,7 +28,7 @@ Robots_txt is [available on crates.io](https://crates.io/crates/robots_txt) and 
 Cargo.toml:
 ```toml
 [dependencies]
-robots_txt = "0.5"
+robots_txt = "0.6"
 ```
 
 ### Parsing & matching paths against rules

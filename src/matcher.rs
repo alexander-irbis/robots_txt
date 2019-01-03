@@ -1,7 +1,4 @@
-#[allow(unused_imports, deprecated)]
-use std::ascii::AsciiExt;
-
-use prelude::*;
+use crate::parts::*;
 
 #[derive(Clone, Debug)]
 pub enum SimpleMatcher<'a> {

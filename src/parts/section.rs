@@ -1,7 +1,8 @@
-use std::collections::BTreeSet;
-use std::iter::FromIterator;
+use std::{borrow::Cow, collections::BTreeSet, fmt, iter::FromIterator};
 
-use prelude::*;
+use url::{ParseError as UrlParseError, Url};
+
+use crate::{parts::*, render::*};
 
 #[derive(Clone, Debug, PartialEq)]
 pub struct Section<'a> {

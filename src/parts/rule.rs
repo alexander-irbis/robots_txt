@@ -1,4 +1,6 @@
-use prelude::*;
+use std::{borrow::Cow, fmt};
+
+use crate::render::*;
 
 #[derive(Clone, Debug, Default, Eq, PartialEq)]
 pub struct Rule<'a> {

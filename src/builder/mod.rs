@@ -6,7 +6,7 @@ pub use self::section::*;
 
 #[cfg(test)]
 mod tests {
-    use prelude::*;
+    use crate::parts::*;
 
     static SAMPLE_1: &'static str = r#"
 User-agent: cybermapper
@@ -29,7 +29,7 @@ Host: example.com
 "#;
 
     fn assert_eq(robots: &Robots, sample: &str) {
-        assert_eq!(robots.to_string(), sample.trim_left());
+        assert_eq!(robots.to_string(), sample.trim_start());
     }
 
     #[test]
@@ -84,7 +84,8 @@ Host: example.com
                     .crawl_delay(4.5)
                     .request_rate(9, 20)
                     .sitemap("http://example.com/sitemap.xml".parse().unwrap())
-            }).finalize();
+            })
+            .finalize();
 
         assert_eq(&robots, SAMPLE_2);
     }

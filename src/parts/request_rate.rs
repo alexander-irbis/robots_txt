@@ -1,4 +1,6 @@
-use prelude::*;
+use std::{fmt, time::Duration};
+
+use crate::render::*;
 
 #[derive(Clone, Copy, Debug, Default, Eq, PartialEq)]
 pub struct RequestRate {

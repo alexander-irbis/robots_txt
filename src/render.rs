@@ -1,4 +1,4 @@
-use prelude::*;
+use std::fmt;
 
 pub trait Render {
     fn render_to<W: fmt::Write>(&self, w: &mut W) -> fmt::Result;

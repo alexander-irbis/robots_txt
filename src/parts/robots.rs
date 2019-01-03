@@ -1,8 +1,6 @@
-#[allow(unused_imports, deprecated)]
-use std::ascii::AsciiExt;
-use std::borrow::Cow;
+use std::{borrow::Cow, fmt};
 
-use prelude::*;
+use crate::{builder::*, parse::*, parts::*, render::*};
 
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct Robots<'a> {
@@ -36,7 +34,7 @@ impl<'a> Robots<'a> {
     }
 
     // TODO change API to avoid this naming conflict
-    #[cfg_attr(feature = "cargo-clippy", allow(should_implement_trait))]
+    #[allow(clippy::should_implement_trait)]
     pub fn from_str(input: &'a str) -> Robots<'a> {
         let mut robots = Constructor::default();
 
@@ -76,7 +74,8 @@ impl<'a> Robots<'a> {
                                         s.parse().map(|s| {
                                             robots.section.req_rate = Some(RequestRate::new(r, s))
                                         })
-                                    }).ok();
+                                    })
+                                    .ok();
                             }
                         }
 
@@ -250,7 +249,7 @@ Host: example.com
     fn parse() {
         let test = |robots, sample| {
             let robots = Robots::from_str(robots);
-            assert_eq!((sample as &str).trim_left(), robots.render().unwrap());
+            assert_eq!((sample as &str).trim_start(), robots.render().unwrap());
         };
 
         test(ROBOTS1, RESULT1);

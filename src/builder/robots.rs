@@ -1,4 +1,6 @@
-use prelude::*;
+use std::borrow::Cow;
+
+use crate::{builder::*, parts::*};
 
 #[derive(Clone, Debug, Default)]
 pub struct RobotsBuilder<'a> {

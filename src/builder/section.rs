@@ -1,7 +1,8 @@
-use std::borrow::Cow;
-use std::collections::BTreeSet;
+use std::{borrow::Cow, collections::BTreeSet};
 
-use prelude::*;
+use url::Url;
+
+use crate::{builder::*, parts::*};
 
 #[derive(Clone, Debug)]
 pub struct SectionBuilder<'a> {

@@ -7,18 +7,6 @@ branches:
 dist: trusty
 sudo: false
 
-addons:
-  apt:
-    packages:
-    - gcc
-    - g++
-    - libssl-dev
-    - libelf-dev
-    - libdw-dev
-    - binutils-dev
-    - libiberty-dev
-    - pkg-config
-
 language: rust
 
 rust:
@@ -52,7 +40,7 @@ jobs:
   - stage: test
     env:
     - FEATURE=test
-    rust: 1.26.0
+    rust: 1.31.1
     script:
     - cargo test --verbose --all
 
@@ -70,7 +58,7 @@ jobs:
 
   - env:
     - FEATURE=test
-    rust: nightly-2018-11-18
+    rust: nightly-2018-12-18
     script:
     - cargo test --verbose --all
 
@@ -85,7 +73,7 @@ jobs:
     - FEATURE=non-fatal-checks
     rust: stable
     install:
-    - cargo-deadlinks -V | grep $DEADLINKS_VERS || cargo install cargo-deadlinks --vers $DEADLINKS_VERS --force
+    - cargo deadlinks -V | grep $DEADLINKS_VERS || cargo install cargo-deadlinks --vers $DEADLINKS_VERS --force
     script:
     - cargo doc --no-deps && cargo deadlinks --dir target/doc || true
 

@@ -3,7 +3,4 @@ pub mod robots;
 pub mod rule;
 pub mod section;
 
-pub use self::request_rate::*;
-pub use self::robots::*;
-pub use self::rule::*;
-pub use self::section::*;
+pub use self::{request_rate::*, robots::*, rule::*, section::*};

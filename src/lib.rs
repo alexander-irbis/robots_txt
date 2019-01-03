@@ -1,5 +1,5 @@
-#![cfg_attr(feature = "cargo-clippy", allow(items_after_statements))]
-#![cfg_attr(feature = "cargo-clippy", allow(match_bool))]
+#![allow(clippy::items_after_statements)]
+#![allow(clippy::match_bool)]
 #![cfg_attr(feature = "release", deny(warnings))]
 
 //! # Standard
@@ -17,21 +17,10 @@
 //! * Sitemap
 //! * Host
 
-pub extern crate url;
-
-pub mod prelude;
-
 pub mod builder;
-pub use builder::*;
-
 pub mod matcher;
-pub use matcher::*;
-
-pub mod parts;
-pub use parts::*;
-
 pub mod parse;
-pub use parse::*;
-
+pub mod parts;
 pub mod render;
-pub use render::*;
+
+pub use crate::{builder::*, matcher::*, parse::*, parts::*, render::*};
