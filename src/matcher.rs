@@ -48,10 +48,12 @@ impl<'a> SimpleMatcher<'a> {
                     if rule.path.len() > path.len() {
                         continue;
                     }
-                    let part: &str = &path[..rule.path.len()];
-                    if part.eq_ignore_ascii_case(&rule.path) {
+                    let normalized : &str = &rule.path;
+
+                    if path.starts_with(normalized) {
                         return rule.allow;
                     }
+
                 }
                 true
             }
