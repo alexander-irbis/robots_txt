@@ -22,7 +22,7 @@ edition = "2018"
 travis-ci = { repository = "alexander-irbis/robots_txt" }
 
 [dependencies]
-url         = "^1.0"
+url         = "^2.0"
 
 [features]
 default     = ["release"]
