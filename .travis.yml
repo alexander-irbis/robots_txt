@@ -12,10 +12,6 @@ language: rust
 rust:
   - stable
 
-matrix:
-  allow_failures:
-    - rust: nightly
-
 cache:
   directories:
   - "$HOME/.cargo"
@@ -24,7 +20,7 @@ cache:
 
 env:
   global:
-  - DEADLINKS_VERS=0.3.0
+  - DEADLINKS_VERS=0.4.1
   - RUSTFLAGS="-C link-dead-code"
   - RUST_LOG=off
 
@@ -40,7 +36,7 @@ jobs:
   - stage: test
     env:
     - FEATURE=test
-    rust: 1.31.1
+    rust: 1.36.0
     script:
     - cargo test --verbose --all
 
@@ -58,7 +54,7 @@ jobs:
 
   - env:
     - FEATURE=test
-    rust: nightly-2018-12-18
+    rust: nightly-2020-03-30
     script:
     - cargo test --verbose --all
 

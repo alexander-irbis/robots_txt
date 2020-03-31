@@ -2,7 +2,7 @@ use std::{borrow::Cow, collections::BTreeSet, fmt, iter::FromIterator};
 
 use url::{ParseError as UrlParseError, Url};
 
-use crate::{parts::*, render::*};
+use crate::parts::*;
 
 #[derive(Clone, Debug, PartialEq)]
 pub struct Section<'a> {
@@ -25,24 +25,24 @@ impl<'a> Default for Section<'a> {
     }
 }
 
-impl<'a> Render for Section<'a> {
-    fn render_to<W: fmt::Write>(&self, w: &mut W) -> fmt::Result {
+impl<'a> fmt::Display for Section<'a> {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         for ua in &self.useragents {
-            writeln!(w, "User-agent: {}", ua)?;
+            writeln!(f, "User-agent: {}", ua)?;
         }
         for rule in &self.rules {
-            rule.render_to(w)?;
+            rule.fmt(f)?;
         }
         if let Some(delay) = self.crawl_delay.as_ref() {
-            writeln!(w, "Crawl-delay: {}", delay)?;
+            writeln!(f, "Crawl-delay: {}", delay)?;
         }
         if let Some(rate) = self.req_rate.as_ref() {
-            rate.render_to(w)?;
+            rate.fmt(f)?;
         }
         for url in &self.sitemaps {
-            writeln!(w, "Sitemap: {}", url)?;
+            writeln!(f, "Sitemap: {}", url)?;
         }
-        writeln!(w)
+        writeln!(f)
     }
 }
 
@@ -127,7 +127,7 @@ mod tests {
     fn render() {
         assert_eq!(
             "User-agent: *\nDisallow:\n\n",
-            Section::default().render().unwrap()
+            Section::default().to_string()
         );
     }
 

@@ -1,10 +1,10 @@
 [package]
 name = "robots_txt"
-version = "0.6.0"
+version = "0.7.0"
 authors = ["Alexander Irbis <irbis.labs@gmail.com>"]
 license = "MIT/Apache-2.0"
-description = "Lightweight robots.txt parser and generator"
-keywords = ["robot", "robots", "robots-txt", "parser", "web"]
+description = "A lightweight parser and generator for robots.txt."
+keywords = ["robots", "robots-txt", "sitemap", "web"]
 categories = ["parser-implementations", "web-programming"]
 readme = "README.md"
 homepage = "https://github.com/alexander-irbis/robots_txt"
@@ -22,7 +22,8 @@ edition = "2018"
 travis-ci = { repository = "alexander-irbis/robots_txt" }
 
 [dependencies]
-url         = "^1.0"
+unicase = "2.6"
+url = "2.0"
 
 [features]
 default     = ["release"]

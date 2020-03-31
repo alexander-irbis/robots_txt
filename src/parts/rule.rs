@@ -1,7 +1,5 @@
 use std::{borrow::Cow, fmt};
 
-use crate::render::*;
-
 #[derive(Clone, Debug, Default, Eq, PartialEq)]
 pub struct Rule<'a> {
     pub allow: bool,
@@ -32,16 +30,16 @@ impl<'a> Rule<'a> {
     }
 }
 
-impl<'a> Render for Rule<'a> {
-    fn render_to<W: fmt::Write>(&self, w: &mut W) -> fmt::Result {
-        match self.allow {
-            true => write!(w, "Allow:")?,
-            false => write!(w, "Disallow:")?,
-        };
+impl<'a> fmt::Display for Rule<'a> {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.write_str(match self.allow {
+            true => "Allow:",
+            false => "Disallow:",
+        })?;
         if !self.path.is_empty() {
-            write!(w, " {}", self.path)?;
+            write!(f, " {}", self.path)?;
         };
-        writeln!(w)
+        writeln!(f)
     }
 }
 
@@ -51,7 +49,7 @@ mod tests {
 
     #[test]
     fn render() {
-        assert_eq!("Allow: /\n", Rule::allow("/").render().unwrap());
-        assert_eq!("Disallow: /\n", Rule::disallow("/").render().unwrap());
+        assert_eq!("Allow: /\n", Rule::allow("/").to_string());
+        assert_eq!("Disallow: /\n", Rule::disallow("/").to_string());
     }
 }

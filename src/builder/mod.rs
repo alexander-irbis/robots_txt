@@ -8,7 +8,7 @@ pub use self::section::*;
 mod tests {
     use crate::parts::*;
 
-    static SAMPLE_1: &'static str = r#"
+    static SAMPLE_1: &str = r#"
 User-agent: cybermapper
 Disallow:
 
@@ -17,7 +17,7 @@ Disallow: /cyberworld/map/
 
 "#;
 
-    static SAMPLE_2: &'static str = r#"
+    static SAMPLE_2: &str = r#"
 User-agent: *
 Disallow: /private
 Disallow:
@@ -34,50 +34,49 @@ Host: example.com
 
     #[test]
     fn build_1_start_end_section() {
-        let robots = Robots::start_build()
-            .start_section_for("cybermapper")
+        let robots = Robots::builder()
+            .start_section("cybermapper")
             .disallow("")
             .end_section()
-            .start_section()
-            .useragent("*")
+            .start_section("*")
             .disallow("/cyberworld/map/")
             .end_section()
-            .finalize();
+            .build();
 
         assert_eq(&robots, SAMPLE_1);
     }
 
     #[test]
     fn build_1_with_section() {
-        let robots = Robots::start_build()
-            .with_section_for("cybermapper", |section| section.disallow(""))
-            .with_section(|section| section.useragent("*").disallow("/cyberworld/map/"))
-            .finalize();
+        let robots = Robots::builder()
+            .with_section("cybermapper", |section| section.disallow(""))
+            .with_section("*", |section| section.disallow("/cyberworld/map/"))
+            .build();
 
         assert_eq(&robots, SAMPLE_1);
     }
 
     #[test]
     fn build_2_start_end_section() {
-        let robots = Robots::start_build()
+        let robots = Robots::builder()
             .host("example.com")
-            .start_section_for("*")
+            .start_section("*")
             .disallow("/private")
             .disallow("")
             .crawl_delay(4.5)
             .request_rate(9, 20)
             .sitemap("http://example.com/sitemap.xml".parse().unwrap())
             .end_section()
-            .finalize();
+            .build();
 
         assert_eq(&robots, SAMPLE_2);
     }
 
     #[test]
     fn build_2_with_section() {
-        let robots = Robots::start_build()
+        let robots = Robots::builder()
             .host("example.com")
-            .with_section_for("*", |section| {
+            .with_section("*", |section| {
                 section
                     .disallow("/private")
                     .disallow("")
@@ -85,7 +84,7 @@ Host: example.com
                     .request_rate(9, 20)
                     .sitemap("http://example.com/sitemap.xml".parse().unwrap())
             })
-            .finalize();
+            .build();
 
         assert_eq(&robots, SAMPLE_2);
     }

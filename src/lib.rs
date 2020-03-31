@@ -21,6 +21,5 @@ pub mod builder;
 pub mod matcher;
 pub mod parse;
 pub mod parts;
-pub mod render;
 
-pub use crate::{builder::*, matcher::*, parse::*, parts::*, render::*};
+pub use self::parts::Robots;

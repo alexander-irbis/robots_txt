@@ -1,3 +1,5 @@
+use unicase::UniCase;
+
 use crate::parts::*;
 
 #[derive(Clone, Debug)]
@@ -49,7 +51,7 @@ impl<'a> SimpleMatcher<'a> {
                         continue;
                     }
                     let part: &str = &path[..rule.path.len()];
-                    if part.eq_ignore_ascii_case(&rule.path) {
+                    if UniCase::new(part) == UniCase::new(&rule.path) {
                         return rule.allow;
                     }
                 }
@@ -70,13 +72,13 @@ impl<'a> SimpleMatcher<'a> {
 mod tests {
     use super::*;
 
-    static ROBOTS1: &'static str = r#"
+    static ROBOTS1: &str = r#"
 User-Agent: *
 Disallow: /cyberworld/map/ # this is an infinite virtual URL space
 Disallow: /tmp/ # these will soon disappear
 "#;
 
-    static ROBOTS2: &'static str = r#"
+    static ROBOTS2: &str = r#"
 # robots.txt for http://www.site.com
 User-Agent: *
 Disallow: /cyberworld/map/ # this is an infinite virtual URL space
@@ -87,7 +89,7 @@ Disallow:
 
     #[test]
     fn matcher1() {
-        let robots = Robots::from_str(ROBOTS1);
+        let robots = Robots::from_str_lossy(ROBOTS1);
         let matcher = SimpleMatcher::new(&robots.choose_section("").rules);
         assert!(matcher.has_rules());
         assert!(matcher.check_path("/public"));
@@ -99,7 +101,7 @@ Disallow:
 
     #[test]
     fn matcher2() {
-        let robots = Robots::from_str(ROBOTS2);
+        let robots = Robots::from_str_lossy(ROBOTS2);
 
         let matcher = SimpleMatcher::new(&robots.choose_section("AnyBot").rules);
         assert!(matcher.has_rules());

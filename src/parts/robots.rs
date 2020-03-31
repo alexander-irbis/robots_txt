@@ -1,6 +1,8 @@
 use std::{borrow::Cow, fmt};
 
-use crate::{builder::*, parse::*, parts::*, render::*};
+use unicase::UniCase;
+
+use crate::{builder::*, parse::*, parts::*};
 
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct Robots<'a> {
@@ -9,37 +11,29 @@ pub struct Robots<'a> {
     pub host: Option<Cow<'a, str>>,
 }
 
-impl<'a> Render for Robots<'a> {
-    fn render_to<W: fmt::Write>(&self, w: &mut W) -> fmt::Result {
+impl<'a> fmt::Display for Robots<'a> {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         for section in &self.sections {
-            section.render_to(w)?;
+            section.fmt(f)?;
         }
-        self.default_section.render_to(w)?;
+        self.default_section.fmt(f)?;
         if let Some(host) = self.host.as_ref() {
-            writeln!(w, "Host: {}", host)?;
+            writeln!(f, "Host: {}", host)?;
         }
         Ok(())
     }
 }
 
-impl<'a> fmt::Display for Robots<'a> {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        self.render_to(f)
-    }
-}
-
 impl<'a> Robots<'a> {
-    pub fn start_build() -> RobotsBuilder<'a> {
-        RobotsBuilder::build()
+    pub fn builder() -> RobotsBuilder<'a> {
+        RobotsBuilder::new()
     }
 
-    // TODO change API to avoid this naming conflict
-    #[allow(clippy::should_implement_trait)]
-    pub fn from_str(input: &'a str) -> Robots<'a> {
+    pub fn from_str_lossy(input: &'a str) -> Robots<'a> {
         let mut robots = Constructor::default();
 
         for line in input.lines() {
-            let (line, comment) = strip_comment(line);
+            let (line, comment) = split_comment(line);
             match split_kv(line) {
                 // Comment line, just skip
                 None if comment.is_some() => {}
@@ -47,27 +41,27 @@ impl<'a> Robots<'a> {
                 None => robots.end_section(),
                 // Some statement
                 Some((k, v)) => {
-                    match k {
-                        k if "user-agent".eq_ignore_ascii_case(k) => {
+                    match UniCase::new(k) {
+                        k if k == UniCase::new("user-agent") => {
                             if robots.section.has_rules() {
                                 robots.end_section();
                             }
                             robots.section.push_ua(v);
                         }
-                        k if "disallow".eq_ignore_ascii_case(k) => {
+                        k if k == UniCase::new("disallow") => {
                             robots.section.push_rule(Rule::disallow(v));
                         }
-                        k if "allow".eq_ignore_ascii_case(k) => {
+                        k if k == UniCase::new("allow") => {
                             robots.section.push_rule(Rule::allow(v));
                         }
-                        k if "sitemap".eq_ignore_ascii_case(k) => {
+                        k if k == UniCase::new("sitemap") => {
                             robots.section.push_sitemap(v).ok();
                         }
-                        k if "host".eq_ignore_ascii_case(k) => robots.set_host(v),
-                        k if "crawl-delay".eq_ignore_ascii_case(k) => {
+                        k if k == UniCase::new("host") => robots.set_host(v),
+                        k if k == UniCase::new("crawl-delay") => {
                             v.parse().map(|v| robots.section.crawl_delay = Some(v)).ok();
                         }
-                        k if "request-rate".eq_ignore_ascii_case(k) => {
+                        k if k == UniCase::new("request-rate") => {
                             if let Some((r, s)) = split_rr(v) {
                                 r.parse()
                                     .and_then(|r| {
@@ -86,7 +80,7 @@ impl<'a> Robots<'a> {
             }
         }
 
-        robots.finalize()
+        robots.build()
     }
 
     pub fn choose_section<U>(&self, ua: U) -> &Section<'a>
@@ -102,7 +96,7 @@ impl<'a> Robots<'a> {
                     }
                     let matches = (0..=ua.len() - ua2.len())
                         .map(|i| &ua[i..i + ua2.len()])
-                        .any(|s: &str| s.eq_ignore_ascii_case(ua2));
+                        .any(|s: &str| UniCase::new(s) == UniCase::new(ua2));
 
                     if matches {
                         return section;
@@ -137,7 +131,7 @@ impl<'a> Constructor<'a> {
     where
         H: Into<Cow<'a, str>>,
     {
-        // Take into account only the first `Host` directive
+        // Take into account only the first `Host` directive.
         if self.host.is_none() {
             self.host = Some(host.into())
         }
@@ -158,7 +152,7 @@ impl<'a> Constructor<'a> {
         }
     }
 
-    pub fn finalize(mut self) -> Robots<'a> {
+    pub fn build(mut self) -> Robots<'a> {
         self.end_section();
         Robots {
             default_section: self.default_section.unwrap_or_default(),
@@ -176,25 +170,25 @@ mod tests {
     fn render() {
         assert_eq!(
             "User-agent: *\nDisallow:\n\n",
-            Robots::default().render().unwrap()
+            Robots::default().to_string()
         );
     }
 
-    static ROBOTS1: &'static str = r#"
+    static ROBOTS1: &str = r#"
 # robots.txt for http://www.site.com
 User-Agent: *
 Disallow: /cyberworld/map/ # this is an infinite virtual URL space
 Disallow: /tmp/ # these will soon disappear
 "#;
 
-    static RESULT1: &'static str = r#"
+    static RESULT1: &str = r#"
 User-agent: *
 Disallow: /cyberworld/map/
 Disallow: /tmp/
 
 "#;
 
-    static ROBOTS2: &'static str = r#"
+    static ROBOTS2: &str = r#"
 # robots.txt for http://www.site.com
 User-Agent: *
 Disallow: /cyberworld/map/ # this is an infinite virtual URL space
@@ -203,7 +197,7 @@ User-Agent: cybermapper
 Disallow:
 "#;
 
-    static RESULT2: &'static str = r#"
+    static RESULT2: &str = r#"
 User-agent: cybermapper
 Disallow:
 
@@ -212,19 +206,19 @@ Disallow: /cyberworld/map/
 
 "#;
 
-    static ROBOTS3: &'static str = r#"
+    static ROBOTS3: &str = r#"
 # robots.txt for http://www.site.com
 User-Agent: *
 Disallow: /
 "#;
 
-    static RESULT3: &'static str = r#"
+    static RESULT3: &str = r#"
 User-agent: *
 Disallow: /
 
 "#;
 
-    static ROBOTS4: &'static str = r#"
+    static ROBOTS4: &str = r#"
 User-Agent: *
 Disallow:
 Disallow: /private
@@ -234,7 +228,7 @@ Sitemap: http://example.com/sitemap.xml
 Host: example.com
 "#;
 
-    static RESULT4: &'static str = r#"
+    static RESULT4: &str = r#"
 User-agent: *
 Disallow:
 Disallow: /private
@@ -248,8 +242,8 @@ Host: example.com
     #[test]
     fn parse() {
         let test = |robots, sample| {
-            let robots = Robots::from_str(robots);
-            assert_eq!((sample as &str).trim_start(), robots.render().unwrap());
+            let robots = Robots::from_str_lossy(robots);
+            assert_eq!((sample as &str).trim_start(), robots.to_string());
         };
 
         test(ROBOTS1, RESULT1);

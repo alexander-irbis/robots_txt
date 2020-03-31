@@ -1,4 +1,4 @@
-pub fn strip_comment(input: &str) -> (&str, Option<&str>) {
+pub fn split_comment(input: &str) -> (&str, Option<&str>) {
     match input.find('#') {
         Some(pos) => (&input[..pos], Some(&input[pos + 1..])),
         None => (input, None),

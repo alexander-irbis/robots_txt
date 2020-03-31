@@ -10,7 +10,7 @@ pub struct RobotsBuilder<'a> {
 }
 
 impl<'a> RobotsBuilder<'a> {
-    pub fn build() -> Self {
+    pub fn new() -> Self {
         RobotsBuilder::default()
     }
 
@@ -26,32 +26,19 @@ impl<'a> RobotsBuilder<'a> {
         self
     }
 
-    pub fn start_section(self) -> SectionBuilder<'a> {
-        SectionBuilder::build(self)
-    }
-
-    pub fn start_section_for<U>(self, ua: U) -> SectionBuilder<'a>
+    pub fn start_section<U>(self, ua: U) -> SectionBuilder<'a>
     where
         U: Into<Cow<'static, str>>,
     {
-        SectionBuilder::build(self).useragent(ua)
+        SectionBuilder::new(self).useragent(ua)
     }
 
-    pub fn with_section<F>(self, f: F) -> Self
-    where
-        F: FnOnce(SectionBuilder<'a>) -> SectionBuilder<'a>,
-    {
-        let section = SectionBuilder::build(self);
-        let section = f(section);
-        section.end_section()
-    }
-
-    pub fn with_section_for<F, U>(self, ua: U, f: F) -> Self
+    pub fn with_section<F, U>(self, ua: U, f: F) -> Self
     where
         F: FnOnce(SectionBuilder<'a>) -> SectionBuilder<'a>,
         U: Into<Cow<'static, str>>,
     {
-        let section = SectionBuilder::build(self).useragent(ua);
+        let section = SectionBuilder::new(self).useragent(ua);
         let section = f(section);
         section.end_section()
     }
@@ -64,7 +51,7 @@ impl<'a> RobotsBuilder<'a> {
         self
     }
 
-    pub fn finalize(self) -> Robots<'a> {
+    pub fn build(self) -> Robots<'a> {
         let default_section = match self.default_section {
             Some(default_section) => default_section,
             None => Section::default(),

@@ -15,7 +15,7 @@ pub struct SectionBuilder<'a> {
 }
 
 impl<'a> SectionBuilder<'a> {
-    pub fn build(robots: RobotsBuilder<'a>) -> Self {
+    pub fn new(robots: RobotsBuilder<'a>) -> Self {
         SectionBuilder {
             robots,
             rules: Default::default(),

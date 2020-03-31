@@ -1,15 +1,16 @@
 
 ![](https://img.shields.io/crates/l/robots_txt.svg)
-[![crates.io](https://img.shields.io/crates/v/robots_txt.svg)](https://crates.io/crates/robots_txt)
+[![crates.io](https://img.shields.io/crates/v/robots_txt)](https://crates.io/crates/robots_txt)
+[![crates.io](https://img.shields.io/crates/dv/robots_txt)](https://crates.io/crates/robots_txt)
 
 [![Build Status](https://travis-ci.org/alexander-irbis/robots_txt.svg)](https://travis-ci.org/alexander-irbis/robots_txt)
-![Minimal rust version 1.31](https://img.shields.io/badge/stable-1.31+-green.svg)
-![Nightly rust version from December 18, 2018](https://img.shields.io/badge/nightly-2018--12--18-yellow.svg)
+![Minimal rust version 1.36](https://img.shields.io/badge/stable-1.36+-green.svg)
+![Nightly rust version from March 30, 2020](https://img.shields.io/badge/nightly-2020--03--30-yellow.svg)
 
 
 # robots_txt
 
-**robots_txt is a lightweight robots.txt parser and generator written in Rust.**
+**robots_txt is a lightweight robots.txt parser and generator for robots.txt written in Rust.**
 
 Nothing extra.
  
@@ -28,15 +29,12 @@ Robots_txt is [available on crates.io](https://crates.io/crates/robots_txt) and 
 Cargo.toml:
 ```toml
 [dependencies]
-robots_txt = "0.6"
+robots_txt = "0.7"
 ```
 
 ### Parsing & matching paths against rules
 
-main.rs:
 ```rust
-extern crate robots_txt;
-
 use robots_txt::Robots;
 
 static ROBOTS: &'static str = r#"
@@ -75,25 +73,26 @@ extern crate robots_txt;
 use robots_txt::Robots;
 
 fn main() {
-    let robots1 = Robots::start_build()
-        .start_section_for("cybermapper")
+    let robots1 = Robots::builder()
+        .start_section("cybermapper")
             .disallow("")
             .end_section()
-        .start_section_for("*")
+        .start_section("*")
             .disallow("/cyberworld/map/")
             .end_section()
-        .finalize();
+        .build();
 
-    let robots2 = Robots::start_build()
-        .host("example.com")
-        .start_section_for("*")
+    let conf_base_url: Url = "https://example.com/".parse().expect("parse domain");
+    let robots2 = Robots::builder()
+        .host(conf_base_url.domain().expect("domain"))
+        .start_section("*")
             .disallow("/private")
             .disallow("")
             .crawl_delay(4.5)
             .request_rate(9, 20)
             .sitemap("http://example.com/sitemap.xml".parse().unwrap())
             .end_section()
-        .finalize();
+        .build();
         
     println!("# robots.txt for http://cyber.example.com/\n\n{}", robots1);
     println!("# robots.txt for http://example.com/\n\n{}", robots2);

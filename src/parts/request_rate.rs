@@ -1,7 +1,5 @@
 use std::{fmt, time::Duration};
 
-use crate::render::*;
-
 #[derive(Clone, Copy, Debug, Default, Eq, PartialEq)]
 pub struct RequestRate {
     pub requests: usize,
@@ -23,9 +21,9 @@ impl RequestRate {
     }
 }
 
-impl Render for RequestRate {
-    fn render_to<W: fmt::Write>(&self, w: &mut W) -> fmt::Result {
-        writeln!(w, "Request-rate: {}/{}", self.requests, self.seconds)
+impl fmt::Display for RequestRate {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        writeln!(f, "Request-rate: {}/{}", self.requests, self.seconds)
     }
 }
 
@@ -35,9 +33,6 @@ mod tests {
 
     #[test]
     fn render() {
-        assert_eq!(
-            "Request-rate: 3/10\n",
-            RequestRate::new(3, 10).render().unwrap()
-        );
+        assert_eq!("Request-rate: 3/10\n", RequestRate::new(3, 10).to_string());
     }
 }
