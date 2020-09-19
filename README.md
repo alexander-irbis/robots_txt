@@ -35,7 +35,10 @@ robots_txt = "0.7"
 ### Parsing & matching paths against rules
 
 ```rust
+extern crate robots_txt;
+
 use robots_txt::Robots;
+use robots_txt::matcher::SimpleMatcher;
 
 static ROBOTS: &'static str = r#"
 
@@ -49,7 +52,7 @@ Disallow:
 "#;
 
 fn main() {
-    let robots = Robots::from_str(ROBOTS);
+    let robots = Robots::from_str_lossy(ROBOTS);
 
     let matcher = SimpleMatcher::new(&robots.choose_section("NoName Bot").rules);
     assert!(matcher.check_path("/some/page"));
@@ -60,6 +63,7 @@ fn main() {
     assert!(matcher.check_path("/some/page"));
     assert!(matcher.check_path("/cyberworld/welcome.html"));
     assert!(matcher.check_path("/cyberworld/map/object.html"));
+    println!("tests run!");
 }
 ```
 
